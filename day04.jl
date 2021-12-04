@@ -11,13 +11,13 @@ function find_bingo(numbers, boards)
         for b in boards
             for c in eachcol(b)
                 if length(intersect(c, numbers[1:i])) == 5
-                    println("bingo")
+                #    println("bingo")
                     return b, i
                 end
             end
             for r in eachrow(b)
                 if length(intersect(r, numbers[1:i])) == 5
-                    println("bingo")
+                #    println("bingo")
                     return b, i
                 end
             end
@@ -25,5 +25,18 @@ function find_bingo(numbers, boards)
     end
 end
 
+function find_last_bingo(numbers, boards)
+    board, n = nothing, nothing
+    while length(boards) > 0
+        board, n = find_bingo(numbers, boards)
+        # println(board, n, numbers[n])
+        filter!(b -> b != board, boards)
+        # println(length(boards))
+    end
+    return board, n
+end
+
 board, n = find_bingo(numbers, boards)
+println(sum(setdiff(reshape(board, :, 1), numbers[1:n])) * numbers[n])
+board, n = find_last_bingo(numbers, boards)
 println(sum(setdiff(reshape(board, :, 1), numbers[1:n])) * numbers[n])
