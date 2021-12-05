@@ -23,9 +23,7 @@ end
 
 ocean_floor = zeros(Int64, max_x+1, max_y+1)
 
-lines = filter(l -> l[1][1] == l[2][1] || l[1][2] == l[2][2], lines)
-
-for l in lines
+for l in filter(l -> l[1][1] == l[2][1] || l[1][2] == l[2][2], lines)
     # println(l)
     p, q = l
     v = q - p
@@ -34,6 +32,37 @@ for l in lines
     # println(rad2deg(angle))
     for i in 0:d
         x = round.(Int, p + [cos(angle), -sin(angle)] * i)
+        # println(x)
+        ocean_floor[(x+[1,1])...] += 1
+    end
+end
+
+println(count(x -> x >= 2, ocean_floor))
+
+ocean_floor = zeros(Int64, max_x+1, max_y+1)
+
+for l in lines
+    # println(l)
+    p, q = l
+    v = q - p
+    d = sqrt(v[1]^2 + v[2]^2)
+    angle = atan(v[1], v[2]) - atan(1, 0)
+    # println(rad2deg(angle), " ", d)
+    # if rad2deg(angle) % 90 == 0
+    #     step = 1
+    # else
+    #     step = sqrt(2)
+    # end
+    # for i in range(0, d, step=step) # TODO: adjust step size to grid
+    # for i in range(0, d, length = sum(abs.(v)))
+    x = copy(p)
+    ocean_floor[(x+[1,1])...] += 1
+    while x != q
+        if rad2deg(angle) % 90 == 0            
+            x += round.(Int, [cos(angle), -sin(angle)])
+        else 
+            x += round.(Int, [cos(angle), -sin(angle)]*sqrt(2))
+        end
         # println(x)
         ocean_floor[(x+[1,1])...] += 1
     end
