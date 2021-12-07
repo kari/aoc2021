@@ -1,25 +1,10 @@
-using LinearAlgebra
-
 line_pattern = r"(\d+),(\d+) -> (\d+),(\d+)"
 lines = open("lines.txt") do f
     map(p -> [[p[1], p[2]], [p[3], p[4]]], map(r -> parse.(Int, match(line_pattern, r).captures), readlines(f)))
 end
 
-max_x, max_y = 0, 0
-for l in lines
-    if l[1][1] > max_x
-        global max_x = l[1][1]
-    end
-    if l[2][1] > max_x
-        global max_x = l[2][1]
-    end
-    if l[1][2] > max_y
-        global max_y = l[1][2]
-    end
-    if l[2][2] > max_y
-        global max_y = l[2][2]
-    end
-end
+max_x = maximum(map(x -> max(x[1][1], x[2][1]), lines))
+max_y = maximum(map(y -> max(y[1][2], y[2][2]), lines))
 
 ocean_floor = zeros(Int64, max_x+1, max_y+1)
 
@@ -29,7 +14,6 @@ for l in filter(l -> l[1][1] == l[2][1] || l[1][2] == l[2][2], lines)
     v = q - p
     d = floor(Int, sqrt(v[1]^2 + v[2]^2))
     angle = atan(v[1], v[2]) - atan(1, 0)
-    # println(rad2deg(angle))
     for i in 0:d
         x = round.(Int, p + [cos(angle), -sin(angle)] * i)
         # println(x)
@@ -39,22 +23,13 @@ end
 
 println(count(x -> x >= 2, ocean_floor))
 
-ocean_floor = zeros(Int64, max_x+1, max_y+1)
-
-for l in lines
+for l in filter(l -> !(l[1][1] == l[2][1] || l[1][2] == l[2][2]), lines)
     # println(l)
     p, q = l
     v = q - p
     d = sqrt(v[1]^2 + v[2]^2)
     angle = atan(v[1], v[2]) - atan(1, 0)
     # println(rad2deg(angle), " ", d)
-    # if rad2deg(angle) % 90 == 0
-    #     step = 1
-    # else
-    #     step = sqrt(2)
-    # end
-    # for i in range(0, d, step=step) # TODO: adjust step size to grid
-    # for i in range(0, d, length = sum(abs.(v)))
     x = copy(p)
     ocean_floor[(x+[1,1])...] += 1
     while x != q
