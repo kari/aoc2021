@@ -5,7 +5,7 @@ cave = open("caves.txt") do f
     reshape(v, dims)
 end
 
-local_mins = []
+local_mins = Vector{CartesianIndex}()
 for i in CartesianIndices(cave)
     global local_mins
     x, y = Tuple(i)
@@ -29,3 +29,31 @@ for i in CartesianIndices(cave)
 end
 
 println(sum(map(x -> cave[x] + 1, local_mins)))
+
+basins = []
+for local_min in local_mins
+    global basins
+    basin = Vector{CartesianIndex}()
+    queue = [local_min]
+    while length(queue) > 0
+        p = popfirst!(queue)
+        push!(basin, p)
+        x, y = Tuple(p)
+        if x > 1 && cave[x - 1, y] < 9
+            push!(queue, CartesianIndex(x - 1, y))
+        end
+        if y > 1 && cave[x, y - 1] < 9
+            push!(queue, CartesianIndex(x, y - 1))
+        end
+        if x < size(cave, 1) && cave[x + 1, y] < 9
+            push!(queue, CartesianIndex(x + 1, y))
+        end
+        if y < size(cave, 2) && cave[x, y + 1] < 9
+            push!(queue, CartesianIndex(x, y + 1))
+        end
+        queue = setdiff(unique(queue), basin)
+    end
+    push!(basins, basin)
+end
+
+println(prod(sort(map(x -> length(x), basins))[end-2:end]))
