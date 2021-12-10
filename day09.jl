@@ -30,7 +30,7 @@ end
 
 println(sum(map(x -> cave[x] + 1, local_mins)))
 
-basins = []
+basins = Vector{Vector{CartesianIndex}}()
 for local_min in local_mins
     global basins
     basin = Vector{CartesianIndex}()
