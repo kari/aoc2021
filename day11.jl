@@ -6,16 +6,16 @@ state = copy(initial_state)
 flashes = 0
 for n in 1:100
     global flashes
-    global state = state .+ 1
+    global state .+= 1
 
     while any(x -> x > 9, state)
         for i in findall(x -> x > 9, state)
             flashes += 1
             x, y = Tuple(i)
-            state[i] = typemin(Int64) # FIXME: -Inf not supported by Int
+            state[i] = typemin(Int)
             x_range = max(x - 1, 1):min(x + 1, size(state, 1))
             y_range = max(y - 1, 1):min(y + 1, size(state, 2))
-            state[x_range, y_range] = state[x_range, y_range] .+ 1
+            state[x_range, y_range] .+= 1
         end
     end
 
@@ -25,16 +25,16 @@ end
 println(flashes)
 
 state = copy(initial_state)
-for n in 1:1_000
-    global state = state .+ 1
+for n in 1:1_000_000
+    global state .+= 1
 
     while any(x -> x > 9, state)
         for i in findall(x -> x > 9, state)
             x, y = Tuple(i)
-            state[i] = typemin(Int64) # FIXME: -Inf not supported by Int
+            state[i] = typemin(Int)
             x_range = max(x - 1, 1):min(x + 1, size(state, 1))
             y_range = max(y - 1, 1):min(y + 1, size(state, 2))
-            state[x_range, y_range] = state[x_range, y_range] .+ 1
+            state[x_range, y_range] .+= 1
         end
     end
 
