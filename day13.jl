@@ -11,33 +11,23 @@ dots, folds = open("origami.txt") do f
     m, folds
 end
 
-for f in folds[1:1]
-    global dots
-    if f[1] == 'y'
-        a = dots[:, 1:f[2]-1]
-        b = reverse(dots[:, f[2]+1:end], dims = 2)
-    elseif f[1] == 'x'
-        a = dots[1:f[2]-1, :]
-        b = reverse(dots[f[2]+1:end, :], dims = 1)
+function fold(m, folds)
+    for f in folds
+        if f[1] == 'y'
+            a = m[:, 1:f[2]-1]
+            b = reverse(m[:, f[2]+1:end], dims = 2)
+        elseif f[1] == 'x'
+            a = m[1:f[2]-1, :]
+            b = reverse(m[f[2]+1:end, :], dims = 1)
+        end
+        m = max.(a, b)
     end
-    dots = max.(a, b)
+    return m
 end
 
-println(sum(dots))
+println(sum(fold(dots, folds[1:1])))
 
-for f in folds[2:end]
-    global dots
-    if f[1] == 'y'
-        a = dots[:, 1:f[2]-1]
-        b = reverse(dots[:, f[2]+1:end], dims = 2)
-    elseif f[1] == 'x'
-        a = dots[1:f[2]-1, :]
-        b = reverse(dots[f[2]+1:end, :], dims = 1)
-    end
-    dots = max.(a, b)
-end
-
-for i in eachcol(dots)
+for i in eachcol(fold(dots, folds))
     for j in i
         if j == 0
             print(' ')
